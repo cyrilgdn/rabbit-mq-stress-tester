@@ -10,6 +10,7 @@ import (
 
 type ProducerConfig struct {
 	Uri        string
+	Queue      string
 	Bytes      int
 	Quiet      bool
 	WaitForAck bool
@@ -32,7 +33,7 @@ func Produce(config ProducerConfig, tasks chan int) {
 
 	ack, nack := channel.NotifyConfirm(make(chan uint64, 1), make(chan uint64, 1))
 
-	q := MakeQueue(channel)
+	q := MakeQueue(channel, config.Queue)
 
 	for {
 
@@ -55,7 +56,7 @@ func Produce(config ProducerConfig, tasks chan int) {
 			ContentType:     "text/plain",
 			ContentEncoding: "UTF-8",
 			Body:            messageJson,
-			DeliveryMode:    amqp.Transient,
+			DeliveryMode:    amqp.Persistent,
 			Priority:        0,
 		},
 		)

@@ -8,7 +8,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func Consume(uri string, doneChan chan bool) {
+func Consume(uri string, queue string, doneChan chan bool) {
 	log.Println("Consuming...")
 	connection, err := amqp.Dial(uri)
 	if err != nil {
@@ -22,7 +22,7 @@ func Consume(uri string, doneChan chan bool) {
 	}
 	defer channel.Close()
 
-	q := MakeQueue(channel)
+	q := MakeQueue(channel, queue)
 
 	msgs, err := channel.Consume(q.Name, "", true, false, false, false, nil)
 	if err != nil {
